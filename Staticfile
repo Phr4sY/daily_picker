@@ -1,0 +1,5 @@
+root: .
+location_include: |
+  if ($uri ~* \.(yaml|yml)$) {
+    add_header Content-Type text/plain;
+  }
