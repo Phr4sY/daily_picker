@@ -1,30 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCF Daily Picker</title>
-    <link rel="icon" type="image/png" href="assets/images/stackit-favicon.ico">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="icon" href="favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1b616d;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            max-width: 700px;
+            max-height: calc(100vh - 40px);
+            max-height: calc(100dvh - 40px);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .stackit-logo {
+            height: 40px;
+            width: auto;
+            filter: brightness(0) saturate(100%) invert(22%) sepia(24%) saturate(2445%) hue-rotate(155deg) brightness(95%) contrast(101%);
+        }
+
+        .title-container {
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #004e5a;
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .wheel-container {
+            position: relative;
+            margin: 5px auto;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center top;
+        }
+
+        .wheel-container.shrink {
+            transform: scale(0.7);
+            margin-bottom: -120px;
+        }
+
+        #wheel {
+            display: block;
+            margin: 0 auto;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0, 78, 90, 0.2);
+        }
+
+        .arrow {
+            position: absolute;
+            top: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: min(20px, 3.5vw) solid transparent;
+            border-right: min(20px, 3.5vw) solid transparent;
+            border-top: min(40px, 7vw) solid #f8ec17;
+            filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3));
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .result {
+            min-height: 80px;
+            margin: 10px 0;
+            font-size: 1.5em;
+            color: #004e5a;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .winner-announcement {
+            color: #1b616d;
+            font-size: 1.8em;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .title-container {
+                margin-bottom: 20px;
+            }
+
+            .winner-announcement {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .stackit-logo {
+                height: 30px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .logo-container {
+                margin-bottom: 15px;
+            }
+
+            .title-container {
+                margin-bottom: 15px;
+            }
+
+            .result {
+                min-height: 60px;
+                margin: 15px 0;
+                font-size: 1.2em;
+            }
+
+            .winner-announcement {
+                font-size: 1.3em;
+            }
+        }
+
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.3em;
+            }
+
+            .winner-announcement {
+                font-size: 1.1em;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+                overflow-y: auto;
+            }
+
+            .wheel-container {
+                max-width: 300px;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <div class="container">
         <div class="logo-container">
-            <img src="assets/images/stackit-logo.svg" alt="STACKIT Logo" class="stackit-logo">
+            <img src="stackit-logo.svg" alt="STACKIT Logo" class="stackit-logo">
         </div>
         <div class="title-container">
-            <h1>Daily Presenter Picker</h1>
+            <h1>Daily Presenter</h1>
         </div>
         <div class="wheel-container">
-            <canvas id="wheel" width="600" height="600"></canvas>
+            <canvas id="wheel"></canvas>
             <div class="arrow"></div>
         </div>
         <div id="result" class="result"></div>
-        <div class="info"></div>
     </div>
-    <script src="js/wheel.js"></script>
+    <script>
+        class WheelOfFortune {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.names = [];
+                this.colors = ['#1b616d', '#004e5a', '#2d7a89', '#005f6f', '#1a5560', '#006d7e', '#2b8799', '#00576a'];
+                this.startAngle = 0;
+                this.arc = 0;
+                this.spinTimeout = null;
+                this.spinAngleStart = 0;
+                this.spinTime = 0;
+                this.spinTimeTotal = 0;
+                this.isSpinning = false;
+                this.cfLogo = null;
+                this.loadLogo();
+                this.setupResizeHandler();
+            }
+
+            setupResizeHandler() {
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => { this.resizeCanvas(); this.drawWheel(); }, 100);
+                });
+            }
+
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                const size = Math.min(container.clientWidth, container.clientHeight);
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = size * dpr;
+                this.canvas.height = size * dpr;
+                this.canvas.style.width = size + 'px';
+                this.canvas.style.height = size + 'px';
+                this.ctx.scale(dpr, dpr);
+                this.displaySize = size;
+            }
+
+            loadLogo() {
+                this.cfLogo = new Image();
+                this.cfLogo.onload = () => this.drawWheel();
+                this.cfLogo.src = 'center-logo.png';
+            }
+
+            getSecureRandom(min, max) {
+                const randomBuffer = new Uint32Array(1);
+                window.crypto.getRandomValues(randomBuffer);
+                return min + (randomBuffer[0] / (0xFFFFFFFF + 1)) * (max - min);
+            }
+
+            async loadConfig() {
+                const response = await fetch('config.yaml');
+                const text = await response.text();
+                this.parseConfig(text);
+                this.arc = (2 * Math.PI) / this.names.length;
+                this.startAngle = this.getSecureRandom(0, 2 * Math.PI);
+                this.resizeCanvas();
+                this.drawWheel();
+            }
+
+            parseConfig(yamlText) {
+                const lines = yamlText.split('\n');
+                let inMembers = false;
+
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (trimmed === 'members:') { inMembers = true; continue; }
+                    if (trimmed.startsWith('googleChat:')) { inMembers = false; continue; }
+                    if (inMembers && trimmed.startsWith('- ')) {
+                        const name = trimmed.substring(2).trim();
+                        if (name) this.names.push(name);
+                    }
+                    if (trimmed.startsWith('enabled:')) {
+                        this.googleChatEnabled = trimmed.includes('true');
+                    }
+                    if (trimmed.startsWith('webhookUrl:')) {
+                        this.webhookUrl = trimmed.substring(11).trim().replace(/^["']|["']$/g, '');
+                    }
+                }
+            }
+
+            drawWheel() {
+                const size = this.displaySize || 600;
+                const centerX = size / 2, centerY = size / 2, radius = size / 2 - 10;
+                this.ctx.clearRect(0, 0, size, size);
+
+                for (let i = 0; i < this.names.length; i++) {
+                    const angle = this.startAngle + i * this.arc;
+                    this.ctx.fillStyle = this.colors[i % this.colors.length];
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX, centerY, radius, angle, angle + this.arc, false);
+                    this.ctx.lineTo(centerX, centerY);
+                    this.ctx.fill();
+
+                    this.ctx.save();
+                    this.ctx.fillStyle = '#f8f8f8';
+                    const fontSize = Math.max(12, Math.floor(size / 33));
+                    this.ctx.font = `bold ${fontSize}px 'Segoe UI', Arial, sans-serif`;
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    const textAngle = angle + this.arc / 2;
+                    const textRadius = radius * 0.7;
+                    this.ctx.translate(centerX + Math.cos(textAngle) * textRadius, centerY + Math.sin(textAngle) * textRadius);
+                    this.ctx.rotate(textAngle + Math.PI / 2);
+                    this.ctx.fillText(this.names[i], 0, 0);
+                    this.ctx.restore();
+                }
+
+                this.ctx.strokeStyle = '#f8f8f8';
+                this.ctx.lineWidth = Math.max(2, size / 150);
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                this.ctx.stroke();
+
+                const centerRadius = radius * 0.25;
+                this.ctx.fillStyle = '#f8f8f8';
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
+                this.ctx.fill();
+
+                if (this.cfLogo?.complete) {
+                    this.ctx.save();
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX, centerY, centerRadius * 0.85, 0, 2 * Math.PI);
+                    this.ctx.clip();
+                    const logoAspectRatio = this.cfLogo.width / this.cfLogo.height;
+                    const maxSize = centerRadius * 1.5;
+                    const [logoWidth, logoHeight] = logoAspectRatio > 1
+                        ? [maxSize, maxSize / logoAspectRatio]
+                        : [maxSize * logoAspectRatio, maxSize];
+                    this.ctx.drawImage(this.cfLogo, centerX - logoWidth / 2, centerY - logoHeight / 2, logoWidth, logoHeight);
+                    this.ctx.restore();
+                }
+
+                this.ctx.strokeStyle = '#004e5a';
+                this.ctx.lineWidth = Math.max(2, size / 200);
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
+                this.ctx.stroke();
+            }
+
+            rotateWheel() {
+                this.spinTime += 30;
+                if (this.spinTime >= this.spinTimeTotal) { this.stopRotateWheel(); return; }
+                const progress = this.spinTime / this.spinTimeTotal;
+                const spinAngle = this.spinAngleStart - this.spinAngleStart * (1 - Math.pow(1 - progress, 3.5));
+                this.startAngle += (spinAngle * Math.PI) / 180;
+                this.drawWheel();
+                this.spinTimeout = setTimeout(() => this.rotateWheel(), 30);
+            }
+
+            stopRotateWheel() {
+                if (this.spinTimeout) clearTimeout(this.spinTimeout);
+                const degrees = (this.startAngle * 180) / Math.PI + 90;
+                const arcd = (this.arc * 180) / Math.PI;
+                const index = Math.floor((360 - (degrees % 360)) / arcd);
+                const winner = this.names[index % this.names.length];
+                this.isSpinning = false;
+                this.displayResult(winner);
+            }
+
+            async postToGoogleChat(winner, date) {
+                if (!this.googleChatEnabled || !this.webhookUrl) return;
+                try {
+                    await fetch(this.webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                        body: JSON.stringify({ text: `🎉 *Next Daily Presenter*\n*${winner}*\n${date}` })
+                    });
+                } catch (e) { console.error('Google Chat error:', e); }
+            }
+
+            getNextWorkingDay() {
+                const today = new Date();
+                const day = today.getDay();
+                const daysToAdd = day === 5 ? 3 : day === 6 ? 2 : 1;
+                const nextDay = new Date(today);
+                nextDay.setDate(today.getDate() + daysToAdd);
+                return nextDay.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            displayResult(winner) {
+                const resultDiv = document.getElementById('result');
+                const wheelContainer = document.querySelector('.wheel-container');
+                const date = this.getNextWorkingDay();
+                wheelContainer.classList.add('shrink');
+                resultDiv.innerHTML = `<div class="winner-announcement">Next Daily Presenter: <br>🎉 <strong>${winner}</strong> 🎉<br><div style="font-size: 0.6em; margin-top: 10px; color: #1b616d;">${date}</div></div>`;
+                this.postToGoogleChat(winner, date);
+            }
+
+            spin() {
+                if (this.isSpinning) return;
+                this.isSpinning = true;
+                document.querySelector('.wheel-container').classList.remove('shrink');
+                document.getElementById('result').innerHTML = '';
+                this.spinAngleStart = this.getSecureRandom(40, 70);
+                this.spinTime = 0;
+                this.spinTimeTotal = this.getSecureRandom(4000, 6000);
+                this.rotateWheel();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const wheel = new WheelOfFortune('wheel');
+            await wheel.loadConfig();
+            document.getElementById('wheel').style.cursor = 'pointer';
+            document.getElementById('wheel').addEventListener('click', () => wheel.spin());
+        });
+    </script>
 </body>
+
 </html>
