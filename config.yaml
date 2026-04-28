@@ -1,7 +1,7 @@
 members:
-  - Name
-  - Name
-  - Name
+  - Name 1
+  - Name 2
+  - Name 3
 googleChat:
   enabled: false
   webhookUrl: ""

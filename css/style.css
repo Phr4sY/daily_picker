@@ -142,6 +142,39 @@ h1 {
     color: var(--color-primary-light);
 }
 
+/* Confirm / Re-spin actions */
+.confirm-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.btn-confirm {
+    font-family: var(--font-stack);
+    font-size: 0.45em;
+    font-weight: 500;
+    padding: 8px 24px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition);
+    background: var(--color-primary);
+    color: var(--color-surface);
+    border: 1px solid var(--color-primary);
+}
+
+.btn-confirm:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary-light);
+}
+
+.confirmed-msg {
+    font-size: 0.45em;
+    color: var(--color-primary-light);
+    font-weight: 500;
+    padding: 8px 0;
+}
+
 /* ==========================================================================
    Stats panel
    ========================================================================== */
@@ -230,25 +263,6 @@ h1 {
     border-bottom: none;
 }
 
-.stats-reset {
-    margin-top: 16px;
-    width: 100%;
-    background: transparent;
-    color: var(--color-primary);
-    border: 1px solid var(--color-primary);
-    border-radius: var(--radius-sm);
-    padding: 8px 16px;
-    cursor: pointer;
-    font-family: var(--font-stack);
-    font-size: 0.85em;
-    font-weight: 500;
-    transition: background var(--transition), color var(--transition);
-}
-
-.stats-reset:hover {
-    background: var(--color-primary);
-    color: var(--color-surface);
-}
 
 /* ==========================================================================
    Responsive

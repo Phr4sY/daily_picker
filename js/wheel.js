@@ -66,6 +66,7 @@ export class WheelOfFortune {
         const response = await fetch('config.yaml?t=' + Date.now());
         const text = await response.text();
         this.parseConfig(text);
+        this.weights = this.names.map(() => 1);
         this.startAngle = this.getSecureRandom(0, 2 * Math.PI);
         this.resizeCanvas();
         this.drawWheel();
@@ -251,12 +252,23 @@ export class WheelOfFortune {
         const date = this.getNextWorkingDay();
 
         wheelContainer.classList.add('shrink');
-        resultDiv.innerHTML = `<div class="winner-announcement">Next Daily Presenter: <br><strong>${winner}</strong><br><div style="font-size: 0.6em; margin-top: 10px; color: #1b616d;">${date}</div></div>`;
 
-        this.postToGoogleChat(winner, date);
+        resultDiv.innerHTML = `<div class="winner-announcement">
+            Next Daily Presenter: <br><strong>${winner}</strong>
+            <div style="font-size: 0.6em; margin-top: 10px; color: #1b616d;">${date}</div>
+            <div class="confirm-actions">
+                <button class="btn-confirm" id="confirm-pick">Confirm</button>
+            </div>
+        </div>`;
 
-        if (this.onWin) {
-            this.onWin(winner);
-        }
+        document.getElementById('confirm-pick').addEventListener('click', () => {
+            this.postToGoogleChat(winner, date);
+            document.querySelector('.confirm-actions').innerHTML =
+                '<div class="confirmed-msg">Confirmed!</div>';
+            if (this.onWin) {
+                this.onWin(winner);
+            }
+        });
+
     }
 }

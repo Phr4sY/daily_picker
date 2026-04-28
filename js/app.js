@@ -1,5 +1,5 @@
 import { WheelOfFortune } from './wheel.js';
-import { getWeights, getPickCounts, recordWin, resetAll } from './pity.js';
+import { getWeights, getPickCounts, recordWin } from './pity.js';
 
 let wheel;
 
@@ -52,9 +52,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateStats();
     });
 
-    // Reset button
-    document.getElementById('stats-reset').addEventListener('click', () => {
-        resetAll();
-        refreshWeights();
-    });
 });
