@@ -263,6 +263,46 @@ h1 {
     border-bottom: none;
 }
 
+.stats-row-disabled td {
+    opacity: 0.4;
+}
+
+.stats-row-disabled .btn-toggle-active {
+    opacity: 1;
+}
+
+.btn-toggle-active {
+    font-family: var(--font-stack);
+    font-size: 0.8em;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.btn-toggle-active.is-active {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    border: 1px solid var(--color-primary);
+}
+
+.btn-toggle-active.is-active:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary-light);
+}
+
+.btn-toggle-active.is-inactive {
+    background: #d64545;
+    color: var(--color-surface);
+    border: 1px solid #d64545;
+}
+
+.btn-toggle-active.is-inactive:hover {
+    background: #b33a3a;
+    border-color: #b33a3a;
+}
+
 
 /* ==========================================================================
    Responsive

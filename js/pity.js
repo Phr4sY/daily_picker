@@ -38,8 +38,11 @@ export function recordWin(winner, names) {
 
     for (const name of names) {
         if (!data[name]) {
-            data[name] = { weight: 1, picks: 0 };
+            data[name] = { weight: 1, picks: 0, active: true };
         }
+
+        // Skip disabled members — their weight stays frozen
+        if (data[name].active === false) continue;
 
         if (name === winner) {
             data[name].weight = 1;
@@ -49,6 +52,26 @@ export function recordWin(winner, names) {
         }
     }
 
+    save(data);
+}
+
+/**
+ * Returns an array of booleans (true = active, false = disabled).
+ */
+export function getActiveStates(names) {
+    const data = load();
+    return names.map(name => data[name]?.active ?? true);
+}
+
+/**
+ * Toggles a member's active state.
+ */
+export function toggleActive(name) {
+    const data = load();
+    if (!data[name]) {
+        data[name] = { weight: 1, picks: 0, active: true };
+    }
+    data[name].active = !data[name].active;
     save(data);
 }
 

@@ -1,29 +1,46 @@
 import { WheelOfFortune } from './wheel.js';
-import { getWeights, getPickCounts, recordWin } from './pity.js';
+import { getWeights, getPickCounts, recordWin, getActiveStates, toggleActive } from './pity.js';
 
 let wheel;
+let allNames = [];
+
+function getActiveNames() {
+    const states = getActiveStates(allNames);
+    return allNames.filter((_, i) => states[i]);
+}
 
 function updateStats() {
     const tbody = document.getElementById('stats-body');
     if (!tbody) return;
 
-    const weights = getWeights(wheel.names);
-    const picks = getPickCounts(wheel.names);
-    const totalWeight = weights.reduce((s, w) => s + w, 0);
+    const weights = getWeights(allNames);
+    const picks = getPickCounts(allNames);
+    const states = getActiveStates(allNames);
+    const activeWeights = weights.filter((_, i) => states[i]);
+    const totalActiveWeight = activeWeights.reduce((s, w) => s + w, 0);
 
-    tbody.innerHTML = wheel.names.map((name, i) => {
-        const pct = ((weights[i] / totalWeight) * 100).toFixed(1);
-        return `<tr>
+    tbody.innerHTML = allNames.map((name, i) => {
+        const active = states[i];
+        const pct = active ? ((weights[i] / totalActiveWeight) * 100).toFixed(1) + '%' : '-';
+        return `<tr class="${active ? '' : 'stats-row-disabled'}">
             <td>${name}</td>
             <td>${picks[i]}</td>
-            <td>${weights[i]}</td>
-            <td>${pct}%</td>
+            <td>${pct}</td>
+            <td><button class="btn-toggle-active ${active ? 'is-active' : 'is-inactive'}" data-name="${name}">${active ? 'On' : 'Off'}</button></td>
         </tr>`;
     }).join('');
+
+    tbody.querySelectorAll('.btn-toggle-active').forEach(btn => {
+        btn.addEventListener('click', () => {
+            toggleActive(btn.dataset.name);
+            refreshWheel();
+        });
+    });
 }
 
-function refreshWeights() {
-    wheel.setWeights(getWeights(wheel.names));
+function refreshWheel() {
+    const activeNames = getActiveNames();
+    wheel.setMembers(activeNames, getWeights(activeNames));
     wheel.drawWheel();
     updateStats();
 }
@@ -31,19 +48,20 @@ function refreshWeights() {
 document.addEventListener('DOMContentLoaded', async () => {
     wheel = new WheelOfFortune('wheel');
     await wheel.loadConfig();
+    allNames = [...wheel.names];
 
-    // Initialize weights from pity data
-    refreshWeights();
+    // Initialize with active members only
+    refreshWheel();
 
     // Wire up spin
     const canvas = document.getElementById('wheel');
     canvas.style.cursor = 'pointer';
     canvas.addEventListener('click', () => wheel.spin());
 
-    // Handle win: update pity data + refresh
+    // Handle win: update pity data + refresh (pass allNames so disabled members are untouched)
     wheel.onWin = (winner) => {
-        recordWin(winner, wheel.names);
-        refreshWeights();
+        recordWin(winner, allNames);
+        refreshWheel();
     };
 
     // Stats toggle

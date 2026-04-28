@@ -97,6 +97,11 @@ export class WheelOfFortune {
         this.weights = weights;
     }
 
+    setMembers(names, weights) {
+        this.names = names;
+        this.weights = weights;
+    }
+
     drawWheel() {
         const arcs = this.computeArcs();
         const size = this.displaySize || 600;
@@ -117,11 +122,19 @@ export class WheelOfFortune {
             this.ctx.lineTo(centerX, centerY);
             this.ctx.fill();
 
-            // Label
+            // Label (clipped to segment)
             this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + arc, false);
+            this.ctx.lineTo(centerX, centerY);
+            this.ctx.clip();
+
             this.ctx.fillStyle = '#f8f8f8';
-            const fontSize = Math.max(12, Math.floor(size / 33));
-            this.ctx.font = `bold ${fontSize}px 'Segoe UI', Arial, sans-serif`;
+            // Scale font down for narrow segments
+            const maxFontSize = Math.max(12, Math.floor(size / 33));
+            const arcLengthAtText = arc * radius * 0.7;
+            const fontSize = Math.min(maxFontSize, Math.max(8, arcLengthAtText * 0.45));
+            this.ctx.font = `bold ${fontSize}px 'Inter', 'Segoe UI', Arial, sans-serif`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             const textAngle = currentAngle + arc / 2;
